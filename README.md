@@ -1,6 +1,6 @@
 # kubeslim
 
-An alternative to K8s client-go optimized for binary size, memory consumption and speed_
+_An alternative to K8s client-go optimized for binary size, memory consumption and speed_
 
 <img width="239" height="349" alt="gopher-slim" src="https://github.com/user-attachments/assets/76a56ea2-652e-41d8-b60d-c768ba35d520" />
 
