@@ -10,9 +10,9 @@ While building the [`kubetail`](https://github.com/kubetail-org/kubetail) CLI to
 
 | Client | Binary Size¹ |
 |---|---|
-| `client-go.Clientset` | 38 MB |
-| `client-go.DynamicClient` | 16 MB |
-| **`kubeslim`** | **10 MB** |
+| `client-go.Clientset` | 25.9 MB |
+| `client-go.DynamicClient` | 10.6 MB |
+| **`kubeslim`** | **9.7 MB** |
 
 ¹ Measured using a minimal Go executable performing a simple API call. See [size-matters](https://github.com/amorey/size-matters) for methodology.
 
