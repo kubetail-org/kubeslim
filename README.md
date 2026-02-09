@@ -1,22 +1,22 @@
 # kubeslim
 
-_An alternative to K8s client-go optimized for binary size, memory consumption and speed_
+_An alternative to client-go, optimized for binary size, memory consumption and speed_
 
 <img width="239" height="349" alt="gopher-slim" src="https://github.com/user-attachments/assets/76a56ea2-652e-41d8-b60d-c768ba35d520" />
 
 ## Introduction
 
-While building the [`kubetail`](https://github.com/kubetail-org/kubetail) CLI tool, we noticed that final binary sizes for tools in the K8s ecosystem (e.g. `kubectl`, `helm`) were disproportionately large compared to other unix utilities. We traced the root cause to the Kubernetes [client-go](https://github.com/kubernetes/client-go) library, which typically adds 20MB+ to final binaries (see our [size-matters](https://github.com/amorey/size-matters) report). We also found that `client-go` informers consume significant amounts of memory at runtime. This library addresses both issues with a design optimized for binary size, memory consumption, and speed.
+While building the [`kubetail`](https://github.com/kubetail-org/kubetail) CLI tool, we noticed that final binary sizes for tools in the K8s ecosystem (e.g. `kubectl`, `helm`) were disproportionately large compared to other unix utilities. We traced the root cause to the Kubernetes [client-go](https://github.com/kubernetes/client-go) library, which typically adds 20MB+ to final binaries (see our [size-matters](https://github.com/amorey/size-matters) report). Separately, we have also found that client-go informers consume significant amounts of memory at runtime. This library addresses both issues with a design optimized for binary size, memory consumption, and speed.
 
-| Client | Binary Size¹ |
-|---|---:|
-| `client-go.Clientset` | 25.9 MB |
-| `client-go.DynamicClient` | 10.6 MB |
-| **`kubeslim`** | **9.7 MB** |
+| Client                    | Binary Size¹ |
+|---------------------------|-------------:|
+| `client-go.Clientset`     | 25.9 MB      |
+| `client-go.DynamicClient` | 10.6 MB      |
+| **`kubeslim`**            | **9.7 MB**   |
 
-¹ Measured using a minimal Go executable performing a simple API call. See [size-matters](https://github.com/amorey/size-matters) for methodology.
+¹ Measured using a minimal Go executable performing a simple API call (see [size-matters](https://github.com/amorey/size-matters) for methodology)
 
-This library is a work in progress and we welcome contributions!
+This library is experimental and is not recommended for production (yet)!
 
 ## Installation
 
