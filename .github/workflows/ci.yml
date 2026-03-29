@@ -76,6 +76,7 @@ jobs:
       - name: Run tests
         run: go test ./...
       - name: Run race tests
+        if: ${{ !(matrix.os == 'windows' && matrix.arch == 'arm64') }}
         run: go test -race ./...
 
   alpine-builds:
