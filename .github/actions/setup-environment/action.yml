@@ -1,0 +1,32 @@
+name: 'Setup Environment'
+description: 'Sets up Go and other dependencies for GHA workflows'
+
+inputs:
+  go-version:
+    description: 'Go version to install'
+    required: false
+    default: '1.25.8'
+  setup-go:
+    description: 'Whether to set up Go'
+    required: false
+    default: 'false'
+  setup-protoc:
+    description: 'Whether to set up Protoc'
+    required: false
+    default: 'false'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Protoc
+      if: inputs.setup-protoc == 'true'
+      uses: arduino/setup-protoc@v3
+
+    - name: Set up Go
+      if: inputs.setup-go == 'true'
+      uses: actions/setup-go@v6
+      with:
+        go-version: ${{ inputs.go-version }}
+        cache-dependency-path: |
+          modules/**/go.sum
+          go.work.sum

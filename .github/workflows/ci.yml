@@ -1,0 +1,130 @@
+name: ci
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-environment
+        with:
+          setup-go: "true"
+      - name: Run linter
+        run: test -z "$(gofmt -l .)"
+
+  vet:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-environment
+        with:
+          setup-go: "true"
+      - name: Perform static analysis
+        run: go vet ./...
+
+  test:
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        os:
+          - linux
+          - macos-15
+          - macos-26
+          - windows
+        arch:
+          - amd64
+          - arm64
+        include:
+          - os: linux
+            arch: amd64
+            runner: ubuntu-24.04
+          - os: linux
+            arch: arm64
+            runner: ubuntu-24.04-arm
+          - os: macos-15
+            arch: amd64
+            runner: macos-15-intel
+          - os: macos-15
+            arch: arm64
+            runner: macos-15
+          - os: macos-26
+            arch: arm64
+            runner: macos-26
+          - os: windows
+            arch: amd64
+            runner: windows-2025
+          - os: windows
+            arch: arm64
+            runner: windows-11-arm
+        exclude:
+          - os: macos-26
+            arch: amd64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-environment
+        with:
+          setup-go: "true"
+      - name: Run tests
+        run: go test ./...
+      - name: Run race tests
+        run: go test -race ./...
+
+  alpine-builds:
+    needs:
+      - lint
+      - vet
+      - test
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - x86
+          - armhf
+          - armv7
+          - loongarch64
+          - ppc64le
+          - riscv64
+          - s390x
+        include:
+          - arch: x86
+            goarch: "386"
+          - arch: armhf
+            goarch: arm
+            goarm: "6"
+          - arch: armv7
+            goarch: arm
+            goarm: "7"
+          - arch: loongarch64
+            goarch: loong64
+          - arch: ppc64le
+            goarch: ppc64le
+          - arch: riscv64
+            goarch: riscv64
+          - arch: s390x
+            goarch: s390x
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-environment
+        with:
+          setup-go: "true"
+      - name: Setup Alpine
+        uses: jirutka/setup-alpine@v1
+        with:
+          arch: ${{ matrix.arch }}
+          branch: edge
+      - name: Build
+        env:
+          GOARCH: ${{ matrix.goarch }}
+          GOARM: ${{ matrix.goarm }}
+        run: |
+          go build
