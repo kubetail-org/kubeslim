@@ -23,9 +23,17 @@ type namespaceList struct {
 type podList struct {
 	Items []struct {
 		Metadata struct {
-			Name string `json:"name"`
+			Name      string `json:"name"`
+			Namespace string `json:"namespace"`
 		} `json:"metadata"`
 	} `json:"items"`
+}
+
+type pod struct {
+	Metadata struct {
+		Name      string `json:"name"`
+		Namespace string `json:"namespace"`
+	} `json:"metadata"`
 }
 
 func main() {
@@ -74,6 +82,16 @@ func main() {
 	}
 
 	for _, pod := range pods.Items {
-		fmt.Println(pod.Metadata.Name)
+		fmt.Printf("%s/%s\n", pod.Metadata.Namespace, pod.Metadata.Name)
 	}
+
+	fmt.Println("\n--- Testing Get Method ---")
+	firstPod := pods.Items[0]
+	fmt.Printf("Fetching pod %s in namespace %s...\n", firstPod.Metadata.Name, firstPod.Metadata.Namespace)
+
+	singlePod, err := kubeslim.Get[pod](context.TODO(), client, podGVR, firstPod.Metadata.Namespace, firstPod.Metadata.Name)
+	if err != nil {
+		log.Fatalf("failed to get pod: %v", err)
+	}
+	fmt.Printf("Successfully retrieved single pod: %s/%s\n", singlePod.Metadata.Namespace, singlePod.Metadata.Name)
 }
